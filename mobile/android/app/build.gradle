@@ -1,0 +1,68 @@
+apply plugin: "com.android.application"
+apply plugin: "com.facebook.react"
+
+def enableHermes = project.findProperty('react.enableHermes') ?: true
+
+android {
+    ndkVersion rootProject.ext.ndkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    namespace "com.aaradhyafashion"
+    
+    buildFeatures {
+        buildConfig true
+    }
+    
+    defaultConfig {
+        applicationId "com.aaradhyafashion"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 3
+        versionName "1.0.2"
+        missingDimensionStrategy 'react-native-camera', 'general'
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", (findProperty('newArchEnabled') ?: false).toString()
+        buildConfigField "boolean", "IS_HERMES_ENABLED", enableHermes.toString()
+        // Force English locale
+        resConfigs "en"
+    }
+    
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+    
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+    
+    packagingOptions {
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+    }
+}
+
+dependencies {
+    implementation("com.facebook.react:react-android")
+    
+    if (enableHermes) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        implementation 'org.webkit:android-jsc:+'
+    }
+}
+
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

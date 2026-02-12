@@ -1,0 +1,32 @@
+# CI/CD: Push to main → auto deploy to AWS EC2
+# To use: copy to .github/workflows/deploy-aws.yml
+# Token needs "workflow" scope to push this file.
+# Setup: GitHub repo → Settings → Secrets and variables → Actions → add secrets (see DEPLOY_CI.md)
+
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            PROJECT_PATH="${{ secrets.EC2_PROJECT_PATH }}"
+            [ -z "$PROJECT_PATH" ] && PROJECT_PATH="/home/ubuntu/Treding-ERP-Barcode-System"
+            cd "$PROJECT_PATH"
+            echo "→ Git pull..."
+            git fetch origin main && git reset --hard origin/main
+            echo "→ Running deploy script..."
+            chmod +x deploy-aws-server.sh && ./deploy-aws-server.sh
+            echo "→ Deploy done."

@@ -1,0 +1,10 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <!-- Force English font and locale to prevent Chinese/Japanese character display -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textLocale">en</item>
+    </style>
+</resources>
