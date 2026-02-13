@@ -186,7 +186,7 @@ export class PurchaseModel {
       const stmt = db.prepare(
         `DELETE FROM products WHERE design_number NOT IN (${placeholders})`
       );
-      const result = stmt.run(...Array.from(importedDesignNumbers));
+      const result = await stmt.run(...Array.from(importedDesignNumbers));
       deleted = result.changes ?? 0;
     }
     return { created, updated, deleted, errors };
